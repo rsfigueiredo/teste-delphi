@@ -37,8 +37,12 @@ type
     procedure btnImpBClick(Sender: TObject);
     procedure btnImpCClick(Sender: TObject);
   protected
-    sValOld, sUltDigito, sComandoOld : String;
-    bZeraDisplay, bAtUltDigt, bZeraCalc : Boolean;
+    sValOld, //Valor do calculo Anterior ao digitado no momento, serve para calcular com o valor atual
+    sUltDigito, //ultimo valor digitado no edit
+    sComandoOld : String; //operacao do calculo
+    bZeraDisplay, //para informar que no proximo valor e para limpar os valores do edit no momento que digitao o novo valor
+    bAtUltDigt, //para saber se é para atualizar o ultimo valor digitado no calculo, usado para varias repetiçoes da tecla "="
+    bZeraCalc : Boolean; //usado para iniciar um novo calculo do zero
   private
     procedure execRotina(sComando: String);
     Function AnalizaComando(sKey: Char): Char;
@@ -59,6 +63,7 @@ implementation
 
 procedure TfrmCalcSimples.btnImpAClick(Sender: TObject);
 begin
+  //Se nao tiver valor nenhum, entao nao calcula
   if Trim(edtValor.Text).IsEmpty then
     exit;
   edtImpA.Text := CalcImpA(StrToFloat(edtValor.Text)).ToString;
@@ -66,6 +71,7 @@ end;
 
 procedure TfrmCalcSimples.btnImpBClick(Sender: TObject);
 begin
+  //Se nao tiver valor nenhum, entao nao calcula
   if Trim(edtValor.Text).IsEmpty then
     exit;
   edtImpB.Text := CalcImpB(StrToFloat(edtValor.Text)).ToString;
@@ -73,6 +79,7 @@ end;
 
 procedure TfrmCalcSimples.btnImpCClick(Sender: TObject);
 begin
+  //Se nao tiver valor nenhum, entao nao calcula
   if Trim(edtValor.Text).IsEmpty then
     exit;
   edtImpC.Text := CalcImpC(StrToFloat(edtValor.Text)).ToString;
@@ -95,9 +102,11 @@ end;
 
 procedure TfrmCalcSimples.edtValorChange(Sender: TObject);
 begin
+  //Se for para atualizar o ultimo valor digitado no edit para a variavel de calculo
   if not trim(TEdit(Sender).Text).IsEmpty and bAtUltDigt and not bZeraDisplay then
   begin
     sUltDigito := TEdit(Sender).Text;
+    // atualiza o label com as informaçoes do calculo
     lbUltExec.Caption := (sValOld+sComandoOld+sUltDigito);
   end;
 end;
@@ -117,9 +126,12 @@ begin
     sKey := #0
   else
   begin
+    //verifica se e um comando de calculo ou um numero
     if CharInSet(sKey, ['+', '-', '*', '/', #$D]) then
     begin
       bAtUltDigt := False;
+
+      //caracter "=" em char é "#$D"
       if CharInSet(sKey, [#$D]) then
         sComando := '='
       else
@@ -129,6 +141,7 @@ begin
 
       bZeraCalc := sComando.Contains('=');
 
+      //executa a rotina com os dados de memoria
       execRotina(sComando);
 //      edtValor.Text := EmptyStr;
       sKey := #0;
@@ -136,6 +149,7 @@ begin
     else
     begin
       bAtUltDigt := True;
+
       if bZeraDisplay then
       begin
         if bZeraCalc then
@@ -146,8 +160,10 @@ begin
           edtValor.Text := EmptyStr;
         end;
 //        lbUltExec.Caption := (edtValor.Text+sComandoOld);
+        // atualiza o label com as informaçoes do calculo
         lbUltExec.Caption := (sValOld+sComandoOld+sUltDigito);
   //      sUltDigito := String(Key);
+        //Limpa o edit para receber o novo valor do calculo
         edtValor.Text := EmptyStr;
         bZeraDisplay := False;
       end;
@@ -160,6 +176,7 @@ procedure TfrmCalcSimples.execRotina(sComando : String);
 var
   bExecCalc : Boolean;
 begin
+  //verifica se é o primeiro digito
   if Trim(sComandoOld).IsEmpty then
   begin
     sComandoOld := sComando;
@@ -168,13 +185,15 @@ begin
     sUltDigito   := edtValor.Text;
     bZeraDisplay := True;
   end
-  else
+  else  //se nao for o primeiro digito
   begin
+    //se o ultimo digito estiver vazio pegar valor anterior
     if Trim(edtValor.Text).IsEmpty and sComando.Contains('=') and sUltDigito.IsEmpty then
       sUltDigito := sValOld;
+    //se ultimo digito continuar vazio, sai da rotina
     if sUltDigito.IsEmpty then
       exit;
-
+    //para executar os calculor nao pode estar ativo para zerar display ou a tecla "=" for presionada
     bExecCalc := not bZeraDisplay or sComando.Contains('=');
 
     if (sComandoOld = '*') and bExecCalc then
@@ -185,15 +204,15 @@ begin
       edtValor.Text :=  FormatFloat('#,,0.#####',(StrToFloat(sValOld) + StrToFloat(sUltDigito)));
     if (sComandoOld = '-') and bExecCalc  then
       edtValor.Text :=  FormatFloat('#,,0.#####',(StrToFloat(sValOld) - StrToFloat(sUltDigito)));
-
+    //salva comando anterior, para caso o comando atual for a tecla "=" ele manter a ultima operação em memoria
     if not sComando.Contains('=') then
       sComandoOld := sComando;
-
+    //Atualiza o label de informacao do calculo
     if sComando.Contains('=') then
       lbUltExec.Caption := (sValOld+sComandoOld+sUltDigito+'=')
     else
       lbUltExec.Caption := (edtValor.Text+sComandoOld);
-
+    //Ajusta os valores pois em texto ele aparece formatado no dysplay, mas na variavel nao aceita formatação.
     if not Trim(edtValor.Text).IsEmpty then
     begin
       sValOld := (edtValor.Text);
@@ -206,27 +225,33 @@ end;
 
 procedure TfrmCalcSimples.sbtDivsaoClick(Sender: TObject);
 begin
-  AnalizaComando('/');
+  AnalizaComando('/'); //divisao
 end;
 
 procedure TfrmCalcSimples.sbtExecClick(Sender: TObject);
 begin
-  AnalizaComando(#$D);
+  AnalizaComando(#$D); // executa o calculo com a tecla "="
 end;
 
 procedure TfrmCalcSimples.sbtMultiplicClick(Sender: TObject);
 begin
-  AnalizaComando('*');
+  AnalizaComando('*'); // multiplicação
 end;
 
 procedure TfrmCalcSimples.sbtSomaClick(Sender: TObject);
 begin
-  AnalizaComando('+');
+  AnalizaComando('+'); //soma
 end;
 
 procedure TfrmCalcSimples.sbtSubtracClick(Sender: TObject);
 begin
-  AnalizaComando('-');
+  AnalizaComando('-'); //subtração
 end;
+
+initialization
+  RegisterClass(TfrmCalcSimples);
+
+finalization
+  UnRegisterClass(TfrmCalcSimples);
 
 end.

@@ -1,0 +1,14 @@
+program Funcionarios;
+
+uses
+  Vcl.Forms,
+  funcionario in 'funcionario.pas' {frmFuncionario};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.MainFormOnTaskbar := True;
+  Application.CreateForm(TfrmFuncionario, frmFuncionario);
+  Application.Run;
+end.

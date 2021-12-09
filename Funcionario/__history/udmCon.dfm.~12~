@@ -1,0 +1,16 @@
+object dmCon: TdmCon
+  OldCreateOrder = False
+  Height = 150
+  Width = 215
+  object fdCon: TFDConnection
+    Params.Strings = (
+      'DriverID=SQLite'
+      
+        'Database=G:\Projetos de teste\TesteCalc\teste-delphi\Funcionario' +
+        '\Win32\Debug\DB_SqLite\dbfuncionario.db'
+      'Password=testeRobson')
+    LoginPrompt = False
+    Left = 32
+    Top = 16
+  end
+end

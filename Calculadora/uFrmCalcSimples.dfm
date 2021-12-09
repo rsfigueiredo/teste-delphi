@@ -85,9 +85,9 @@ object frmCalcSimples: TfrmCalcSimples
     WordWrap = True
   end
   object lbUltExec: TLabel
-    Left = 8
+    Left = 146
     Top = 32
-    Width = 163
+    Width = 25
     Height = 18
     Alignment = taRightJustify
     Caption = '-----'

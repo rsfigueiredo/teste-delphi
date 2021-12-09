@@ -1,0 +1,56 @@
+unit uFunc;
+
+
+interface
+
+uses
+  Data.SqlExpr,
+  Datasnap.DBClient,
+  FireDAC.Comp.Client,
+  System.Classes,
+  System.JSON,
+  System.SysUtils,
+  FireDAC.Stan.Param,
+  Data.DB,
+  Vcl.Graphics,
+  Vcl.ExtCtrls,
+  Vcl.controls,
+  Vcl.DBCtrls,
+  Vcl.DBGRids,
+  Vcl.Grids,
+  Vcl.StdCtrls,
+  Vcl.ComCtrls,
+  Vcl.Mask,
+  Vcl.Forms,
+  System.IniFiles,
+  Winapi.Windows,
+  Winapi.SHEllapi,
+  Messages,
+  ActiveX,
+  ComObj,
+  Variants,
+  DBCommon,
+  System.Zip,
+  System.Math,
+  Winapi.MMSystem;
+
+  procedure validaBancoDados;
+
+implementation
+
+procedure validaBancoDados;
+var
+  DBLite: TextFile;
+begin
+  ForceDirectories(ExtractFileDir(Application.ExeName)+'\DB_SqLite\');
+
+  if not FileExists(ExtractFileDir(Application.ExeName)+'\DB_SqLite\dbfuncionario.db') then
+  begin
+    AssignFile(DBLite, ExtractFileDir(Application.ExeName)+'\DB_SqLite\dbfuncionario.db');
+    Rewrite(DBLite, ExtractFileDir(Application.ExeName)+'\DB_SqLite\dbfuncionario.db');
+    Append(DBLite);
+    CloseFile(DBLite);
+  end;
+end;
+
+end.
