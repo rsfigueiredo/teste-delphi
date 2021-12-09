@@ -122,7 +122,7 @@ var
 begin
   sComando := '';
   // Para o campo só aceitar números
-  if not CharInSet(sKey, ['0' .. '9', '+', '-', '*', '/', #$D]) then
+  if not CharInSet(sKey, ['0' .. '9', '+', '-', '*', '/', #$D, #$1B, #8]) then
     sKey := #0
   else
   begin
@@ -150,7 +150,7 @@ begin
     begin
       bAtUltDigt := True;
 
-      if bZeraDisplay then
+      if bZeraDisplay or CharInSet(sKey, [#$1B]) then
       begin
         if bZeraCalc then
         begin

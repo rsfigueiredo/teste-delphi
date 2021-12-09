@@ -1,0 +1,94 @@
+object dmCon: TdmCon
+  OldCreateOrder = False
+  OnCreate = DataModuleCreate
+  Height = 225
+  Width = 351
+  object fdCon: TFDConnection
+    Params.Strings = (
+      'DriverID=SQLite'
+      
+        'Database=G:\Projetos de teste\TesteCalc\teste-delphi\Funcionario' +
+        '\Win32\Debug\DB_SqLite\dbfuncionario.db')
+    LoginPrompt = False
+    Left = 32
+    Top = 16
+  end
+  object FDPhysSQLiteDriverLink1: TFDPhysSQLiteDriverLink
+    Left = 120
+    Top = 16
+  end
+  object qryDadosFunc: TFDQuery
+    Connection = fdCon
+    SQL.Strings = (
+      'select * from funcionario')
+    Left = 251
+    Top = 25
+    object qryDadosFuncfn_id: TIntegerField
+      DisplayLabel = 'ID'
+      FieldName = 'fn_id'
+      Origin = 'fn_id'
+      ProviderFlags = [pfInUpdate]
+    end
+    object qryDadosFuncfn_nome: TStringField
+      DisplayLabel = 'Nome'
+      FieldName = 'fn_nome'
+      Origin = 'fn_nome'
+      ProviderFlags = [pfInUpdate]
+      Size = 32767
+    end
+    object qryDadosFuncfn_cpf: TStringField
+      DisplayLabel = 'CPF'
+      FieldName = 'fn_cpf'
+      Origin = 'fn_cpf'
+      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
+      Size = 32767
+    end
+    object qryDadosFuncfn_salario: TIntegerField
+      DisplayLabel = 'Sal'#225'rio (R$)'
+      FieldName = 'fn_salario'
+      Origin = 'fn_salario'
+      ProviderFlags = [pfInUpdate]
+    end
+  end
+  object qryDadosDependentes: TFDQuery
+    Connection = fdCon
+    SQL.Strings = (
+      'select * from dependentes')
+    Left = 255
+    Top = 89
+    object qryDadosDependentesdp_id: TIntegerField
+      DisplayLabel = 'ID'
+      FieldName = 'dp_id'
+      Origin = 'dp_id'
+      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
+    end
+    object qryDadosDependentesdp_idfunc: TIntegerField
+      DisplayLabel = 'ID Func'
+      FieldName = 'dp_idfunc'
+      Origin = 'dp_idfunc'
+    end
+    object qryDadosDependentesdb_nome: TStringField
+      DisplayLabel = 'Nome'
+      FieldName = 'db_nome'
+      Origin = 'db_nome'
+      Size = 32767
+    end
+    object qryDadosDependentesdb_iscalculair: TStringField
+      DisplayLabel = 'Calcula IR'
+      FieldName = 'db_iscalculair'
+      Origin = 'db_iscalculair'
+      Size = 32767
+    end
+    object qryDadosDependentesdb_iscalculainss: TStringField
+      DisplayLabel = 'Calcula INSS'
+      FieldName = 'db_iscalculainss'
+      Origin = 'db_iscalculainss'
+      Size = 32767
+    end
+  end
+  object FDQuery1: TFDQuery
+    Connection = fdCon
+    Left = 32
+    Top = 88
+  end
+end

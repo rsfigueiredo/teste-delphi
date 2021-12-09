@@ -103,6 +103,99 @@ begin
      qryAux.ExecSQL;
     end;
 
+    //verificando e criando a tabela dependentes
+    sSql := 'PRAGMA table_info("generica")';
+    qryAux.Close;
+    qryAux.SQL.Text := sSql;
+    qryAux.Open;
+    if qryAux.IsEmpty then
+    begin
+      qryAux.Close;
+      sSql := ' CREATE TABLE "generica"(' +
+              '  "gn_id" integer primary key' +
+              ', "gn_tabela" varchar' +
+              ', "gn_item" integer' +
+              ', "gn_descricao" varchar' +
+              ');';
+      qryAux.SQL.Text := sSql;
+      qryAux.ExecSQL;
+
+      sSql := ' INSERT INTO generica '+
+             '   ( '+
+             '      gn_id '+
+             '    , gn_tabela '+
+             '    , gn_item '+
+             '    , gn_descricao '+
+             '   )'+
+             ' VALUES (  1 ' +
+             '   , ''SIMNAO'' ' +
+             '   , 1 ' +
+             '   , ''SIM'' ' +
+             '   );';
+
+      qryAux.SQL.Text := sSql;
+      qryAux.ExecSQL;
+      sSql := ' INSERT INTO generica '+
+             '   ( '+
+             '      gn_id '+
+             '    , gn_tabela '+
+             '    , gn_item '+
+             '    , gn_descricao '+
+             '   )'+
+             ' VALUES (  2 ' +
+             '   , ''SIMNAO'' ' +
+             '   , 2 ' +
+             '   , ''NAO'' ' +
+             '   );';
+
+      qryAux.SQL.Text := sSql;
+      qryAux.ExecSQL;
+
+    end
+    else
+    begin
+      sSql := 'select * from generica ';
+      qryAux.Close;
+      qryAux.SQL.Text := sSql;
+      qryAux.Open;
+
+      qryAux.Filtered := False;
+      qryAux.Filter := ' gn_tabela = ''SIMNAO'' and gn_descricao =  ''SIM'' ';
+      qryAux.Filtered := True;
+
+      if qryAux.IsEmpty then
+        dmCon.fdCon.ExecSQL( ' INSERT INTO generica '+
+                             '   ( '+
+                             '      gn_id '+
+                             '    , gn_tabela '+
+                             '    , gn_item '+
+                             '    , gn_descricao '+
+                             '   )'+
+                             ' VALUES (  1 ' +
+                             '   , ''SIMNAO'' ' +
+                             '   , 1 ' +
+                             '   , ''SIM'' ' +
+                             '   );');
+
+      qryAux.Filtered := False;
+      qryAux.Filter := ' gn_tabela = ''SIMNAO'' and gn_descricao =  ''NAO'' ';
+      qryAux.Filtered := True;
+
+      if qryAux.IsEmpty then
+        dmCon.fdCon.ExecSQL( ' INSERT INTO generica '+
+                             '   ( '+
+                             '      gn_id '+
+                             '    , gn_tabela '+
+                             '    , gn_item '+
+                             '    , gn_descricao '+
+                             '   )'+
+                             '  VALUES (  2 ' +
+                             '   , ''SIMNAO'' ' +
+                             '   , 2 ' +
+                             '   , ''NAO'' ' +
+                             '   );');
+    end;
+
 
   finally
     FreeAndNil(qryAux);
