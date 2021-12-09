@@ -19,7 +19,6 @@ type
     qryDadosFuncfn_id: TIntegerField;
     qryDadosFuncfn_nome: TStringField;
     qryDadosFuncfn_cpf: TStringField;
-    qryDadosFuncfn_salario: TIntegerField;
     qryDadosDependentes: TFDQuery;
     qryDadosDependentesdp_id: TIntegerField;
     qryDadosDependentesdp_idfunc: TIntegerField;
@@ -33,7 +32,11 @@ type
     qrySimNaogn_descricao: TStringField;
     qryDadosDependentescalculaIR: TStringField;
     qryDadosDependentescalculaINSS: TStringField;
+    qryDadosFuncfn_salario: TFloatField;
     procedure DataModuleCreate(Sender: TObject);
+    procedure qryDadosFuncAfterInsert(DataSet: TDataSet);
+    procedure qryDadosDependentesAfterInsert(DataSet: TDataSet);
+    procedure qryDadosFuncfn_cpfValidate(Sender: TField);
   private
     { Private declarations }
   public
@@ -55,6 +58,25 @@ procedure TdmCon.DataModuleCreate(Sender: TObject);
 begin
   validaBancoDados;
   validaTabelas;
+end;
+
+procedure TdmCon.qryDadosDependentesAfterInsert(DataSet: TDataSet);
+begin
+  qryDadosDependentes.FieldByName('dp_id').AsInteger := proximoNumeroTabela('dependentes', 'dp_id');
+  qryDadosDependentes.FieldByName('dp_idfunc').AsInteger := qryDadosFunc.FieldByName('fn_id').AsInteger;
+end;
+
+procedure TdmCon.qryDadosFuncAfterInsert(DataSet: TDataSet);
+begin
+  qryDadosFunc.FieldByName('fn_id').AsInteger := proximoNumeroTabela('funcionario', 'fn_id');
+end;
+
+procedure TdmCon.qryDadosFuncfn_cpfValidate(Sender: TField);
+begin
+  if trim(Sender.AsString).IsEmpty then
+    exit;
+  if not ValidaCPF(Sender.AsString) then
+    raise Exception.Create('CPF inválido. Informe um CPF Válido.');
 end;
 
 end.

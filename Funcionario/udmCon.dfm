@@ -18,6 +18,7 @@ object dmCon: TdmCon
     Top = 16
   end
   object qryDadosFunc: TFDQuery
+    AfterInsert = qryDadosFuncAfterInsert
     Connection = fdCon
     SQL.Strings = (
       'select * from funcionario')
@@ -42,21 +43,33 @@ object dmCon: TdmCon
       FieldName = 'fn_cpf'
       Origin = 'fn_cpf'
       ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
+      OnValidate = qryDadosFuncfn_cpfValidate
+      EditMask = '!999\-999-999\-99;0;_'
       Size = 32767
     end
-    object qryDadosFuncfn_salario: TIntegerField
+    object qryDadosFuncfn_salario: TFloatField
+      DefaultExpression = '0.00'
       DisplayLabel = 'Sal'#225'rio (R$)'
       FieldName = 'fn_salario'
       Origin = 'fn_salario'
-      ProviderFlags = [pfInUpdate]
+      DisplayFormat = '##,###,##0.00;0;_'
     end
   end
   object qryDadosDependentes: TFDQuery
+    AfterInsert = qryDadosDependentesAfterInsert
     Connection = fdCon
     SQL.Strings = (
-      'select * from dependentes')
+      'select * from dependentes'
+      'where dp_idfunc = :idfunc')
     Left = 255
     Top = 89
+    ParamData = <
+      item
+        Name = 'IDFUNC'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = Null
+      end>
     object qryDadosDependentesdp_id: TIntegerField
       DisplayLabel = 'ID'
       FieldName = 'dp_id'
