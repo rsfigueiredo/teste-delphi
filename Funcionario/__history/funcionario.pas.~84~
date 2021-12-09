@@ -83,6 +83,7 @@ type
     procedure ConfigBotoesDependentes;
     procedure CalculaINSS;
     procedure CalculaIR;
+    procedure AtualizaListaDependentes;
     { Private declarations }
   public
     { Public declarations }
@@ -120,18 +121,57 @@ end;
 procedure TfrmFuncionario.CalculaINSS;
 var
   iCalc : Double;
+  iQTDCalcINSS: Integer;
 begin
-
+  iQTDCalcINSS := 0;
   edtCalcINSS.Clear;
+  dsDadosDependentes.DataSet.First;
+  while not dsDadosDependentes.DataSet.Eof do
+  begin
+    if dsDadosDependentes.DataSet.FieldByName('db_iscalculainss').AsInteger = 1 then
+    begin
+      inc(iQTDCalcINSS);
+    end;
+    dsDadosDependentes.DataSet.Next;
+  end;
+  dsDadosDependentes.DataSet.First;
+
+  if iQTDCalcINSS = 0 then
+  begin
+    edtCalcINSS.Text := 'R$ 0,00';
+    exit;
+  end;
+
   iCalc := dsDadosFunc.DataSet.FieldByName('fn_salario').AsFloat;
-  iCalc := (iCalc - ((iCalc/100)*8));
+  iCalc := ((iCalc - (iQTDCalcINSS * 100)) / 100)*15 ;
+  edtCalcINSS.Text := 'R$ '+FormatFloat('#,,#0.00', iCalc);
 end;
 
 procedure TfrmFuncionario.CalculaIR;
 var
   iCalc : Double;
+  bCalcIR : Boolean;
 begin
+  bCalcIR := False;
   edtCalcIR.Clear;
+  dsDadosDependentes.DataSet.First;
+  while not dsDadosDependentes.DataSet.Eof do
+  begin
+    if dsDadosDependentes.DataSet.FieldByName('db_iscalculair').AsInteger = 1 then
+    begin
+      bCalcIR := True;
+      break;
+    end;
+    dsDadosDependentes.DataSet.Next;
+  end;
+  dsDadosDependentes.DataSet.First;
+
+  if not bCalcIR then
+  begin
+    edtCalcIR.Text := 'R$ 0,00';
+    exit;
+  end;
+
   iCalc := dsDadosFunc.DataSet.FieldByName('fn_salario').AsFloat;
   iCalc := ((iCalc/100)*8);
   edtCalcIR.Text := 'R$ '+FormatFloat('#,,#0.00', iCalc);
@@ -245,21 +285,32 @@ procedure TfrmFuncionario.dsDadosFuncDataChange(Sender: TObject; Field: TField);
 begin
   edtCalcIR.Clear;
   edtCalcINSS.Clear;
+  AtualizaListaDependentes;
 end;
 
 procedure TfrmFuncionario.dsDadosFuncStateChange(Sender: TObject);
 begin
   ConfigBotoes;
+
 end;
 
 procedure TfrmFuncionario.FormShow(Sender: TObject);
 begin
   dsDadosFunc.DataSet.Close;
   dsDadosFunc.DataSet.Open;
+
   dsDadosDependentes.DataSet.Close;
-  dsDadosDependentes.DataSet.Open;
+  if not dsDadosFunc.DataSet.IsEmpty then
+    AtualizaListaDependentes;
   ConfigBotoes;
   ConfigBotoesDependentes;
+end;
+
+procedure TfrmFuncionario.AtualizaListaDependentes;
+begin
+  dsDadosDependentes.DataSet.Close;
+  TFDQuery(dsDadosDependentes.DataSet).ParamByName('idfunc').AsInteger := dsDadosFunc.DataSet.FieldByName('fn_id').AsInteger;
+  dsDadosDependentes.DataSet.Open;
 end;
 
 procedure TfrmFuncionario.ConfigBotoes;

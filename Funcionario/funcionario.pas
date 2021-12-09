@@ -136,11 +136,11 @@ begin
   end;
   dsDadosDependentes.DataSet.First;
 
-  if iQTDCalcINSS = 0 then
-  begin
-    edtCalcINSS.Text := 'R$ 0,00';
-    exit;
-  end;
+//  if iQTDCalcINSS = 0 then
+//  begin
+//    edtCalcINSS.Text := 'R$ 0,00';
+//    exit;
+//  end;
 
   iCalc := dsDadosFunc.DataSet.FieldByName('fn_salario').AsFloat;
   iCalc := ((iCalc - (iQTDCalcINSS * 100)) / 100)*15 ;
